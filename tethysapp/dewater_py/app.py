@@ -35,8 +35,11 @@ class DewaterPy(TethysAppBase):
                     UrlMap(name='tech',
                            url='dewater_py/tech',
                            controller='dewater_py.controllers.tech'),
+                    UrlMap(name='verify',
+                           url='dewater_py/verify',
+                           controller='dewater_py.controllers.verify'),
                     UrlMap(name='get_generate_water_table_ajax',
-                           url='dewater-py/tool/generate-water-table',
+                           url='dewater-py/generate-water-table',
                            controller='dewater_py.controllers.generate_water_table'),
         )
 

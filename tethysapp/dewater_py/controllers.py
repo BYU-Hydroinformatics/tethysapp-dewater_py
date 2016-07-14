@@ -93,13 +93,13 @@ def tool(request):
                   append='[ft]',
                   )
 
-    execute = Button(display_text='Calculate Water Table Elevations',
-                     attributes='onclick=app.verify()',
-                     submit=True,
-                     classes='btn-success')
+    # execute = Button(display_text='Calculate Water Table Elevations',
+    #                  attributes='onclick':"verify();",
+    #                  submit=True,
+    #                  classes='btn-success')
 
     instructions = Button(display_text='Instructions',
-                     attributes='onclick=app.dewater()',
+                     attributes='onclick=generate_water_table',
                      submit=True)
 
     context = { 'page_id' : '1', 'map_view_options': map_view_options,
@@ -111,6 +111,23 @@ def tool(request):
                 'dwte':dwte,
                 'execute':execute,
                 'instructions':instructions}
+
+    return render(request, 'dewater_py/DewateringTool.html', context)
+
+def verify(request):
+
+        # Define Message Box for user feedback
+    message_box = MessageBox(name='sampleModal',
+                         title='Message Box Title',
+                         message='Congratulations! This is a message box.',
+                         dismiss_button='Nevermind',
+                         affirmative_button='Proceed',
+                         width=400,
+                         affirmative_attributes='href=javascript:void(0);')
+
+    context = {
+        'message_box':message_box
+                }
 
     return render(request, 'dewater_py/DewateringTool.html', context)
 
