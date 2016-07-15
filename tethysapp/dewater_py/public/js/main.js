@@ -292,6 +292,24 @@ $.ajax({
                 }
         });
 
+$.ajax({
+    type: 'GET',
+    url: 'generate-water-table',
+    dataType: 'json',
+    data: {
+        'pXCoords': pXCoords,
+        'pYCoords': pYCoords,
+        'wXCoords': pXCoords,
+        'wYCoords': pYCoords,
+        'cellSide': cellSide,
+        },
+        success: function (data){
+            if("success" in data)
+                waterTable = JSON.parse(data.local_Water_Table);
+                console.log(waterTable);
+                }
+        });
+
 //console.log("Getting water table");
 
 //  ################################# Build the grid with polygon cells ################################################
