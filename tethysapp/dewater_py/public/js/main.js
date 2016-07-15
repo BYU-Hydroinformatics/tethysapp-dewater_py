@@ -279,29 +279,11 @@ $.ajax({
     url: 'generate-water-table',
     dataType: 'json',
     data: {
-        'pXCoords': pXCoords,
-        'pYCoords': pYCoords,
-        'wXCoords': pXCoords,
-        'wYCoords': pYCoords,
-        'cellSide': cellSide,
-        },
-        success: function (data){
-            if("success" in data)
-                waterTable = JSON.parse(data.local_Water_Table);
-                console.log(waterTable);
-                }
-        });
-
-$.ajax({
-    type: 'GET',
-    url: 'generate-water-table',
-    dataType: 'json',
-    data: {
-        'pXCoords': pXCoords,
-        'pYCoords': pYCoords,
-        'wXCoords': pXCoords,
-        'wYCoords': pYCoords,
-        'cellSide': cellSide,
+        'pXCoords': JSON.stringify(pXCoords),
+        'pYCoords': JSON.stringify(pYCoords),
+        'wXCoords': JSON.stringify(wXCoords),
+        'wYCoords': JSON.stringify(wYCoords),
+        'cellSide': JSON.stringify(cellSide),
         },
         success: function (data){
             if("success" in data)

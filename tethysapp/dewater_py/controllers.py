@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 import json
+import numpy as np
 
 from tethys_sdk.gizmos import *
 
@@ -93,10 +94,10 @@ def tool(request):
                   append='[ft]',
                   )
 
-    # execute = Button(display_text='Calculate Water Table Elevations',
-    #                  attributes='onclick':"verify();",
-    #                  submit=True,
-    #                  classes='btn-success')
+    execute = Button(display_text='Calculate Water Table Elevations',
+                     attributes='onclick=app.verify();',
+                     submit=True,
+                     classes='btn-success')
 
     instructions = Button(display_text='Instructions',
                      attributes='onclick=generate_water_table',
@@ -135,15 +136,15 @@ def generate_water_table(request):
 
     get_data = request.GET
 
-    pXCoords = get_data['pXCoords']
-    print pXCoords
-    pYCoords = get_data['pYCoords']
-    print pYCoords
-    wXCoords = get_data['wXCoords']
-    print wXCoords
-    wYCoords = get_data['wYCoords']
-    print wYCoords
-    cellSide = get_data['cellSide']
+    pXCoords = json.loads(get_data['pXCoords'])
+    print pXCoords[0]
+    pYCoords = json.loads(get_data['pYCoords'])
+    print pYCoords[0]
+    wXCoords = json.loads(get_data['wXCoords'])
+    print wXCoords[0]
+    wYCoords = json.loads(get_data['wYCoords'])
+    print wYCoords[0]
+    cellSide = json.loads(get_data['cellSide'])
     print cellSide
     waterTable = []
 
@@ -153,8 +154,8 @@ def generate_water_table(request):
     # Create water table raster grid
 
     # This code builds the grid with the bounding box being the perimeter drawn by the user
-    for long in xrange(pXCoords[0]-cellSide, pXCoords[2]+cellSide, cellSide):
-        for lat in range(pYCoords[0]-cellSide, pYCoords[2]+cellSide, cellSide):
+    for long in np.arange(pXCoords[0]-cellSide, pXCoords[2]+cellSide, cellSide):
+        for lat in np.arange(pYCoords[0]-cellSide, pYCoords[2]+cellSide, cellSide):
             waterTable.append({
                 'type': 'Feature',
                 'geometry': {
