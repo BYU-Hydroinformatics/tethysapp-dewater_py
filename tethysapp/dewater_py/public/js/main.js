@@ -284,12 +284,26 @@ $.ajax({
         'wXCoords': JSON.stringify(wXCoords),
         'wYCoords': JSON.stringify(wYCoords),
         'cellSide': JSON.stringify(cellSide),
+        'initial': JSON.stringify(iwte.value),
+        'bedrock': JSON.stringify(bedrock.value),
+        'q': JSON.stringify(q.value),
+        'k': JSON.stringify(k.value),
         },
         success: function (data){
-            if("success" in data)
-                waterTable = JSON.parse(data.local_Water_Table);
-                console.log(waterTable);
-                }
+				console.log(data)
+				waterTable = (JSON.parse(data.local_Water_Table));
+				var local_mapView = {
+					'type': 'FeatureCollection',
+					'crs': {
+						'type': 'name',
+						'properties':{
+							'name':'EPSG:4326'
+							}
+					},
+					'features': waterTable
+					};
+				addWaterTable(local_mapView,"Excavation Site");
+				}
         });
 
 //console.log("Getting water table");
@@ -356,16 +370,16 @@ for (long = mapXCoords[0]-cellSide; long < mapXCoords[1]; long += cellSide) {
 //    },
 //    'features': waterTable
 //};
-var local_mapView = {
-    'type': 'FeatureCollection',
-    'crs': {
-        'type': 'name',
-        'properties':{
-            'name':'EPSG:4326'
-            }
-    },
-    'features': waterTable
-};
+//var local_mapView = {
+//    'type': 'FeatureCollection',
+//    'crs': {
+//        'type': 'name',
+//        'properties':{
+//            'name':'EPSG:4326'
+//            }
+//    },
+//    'features': waterTable
+//};
 
 var raster_elev_mapView = {
     'type': 'FeatureCollection',
@@ -379,7 +393,7 @@ var raster_elev_mapView = {
 };
 //addWaterTable(raster_elev,"Water Table Elevations");
 addWaterTable(raster_elev_mapView,"Water Table");
-addWaterTable(local_mapView,"Excavation Site");
+//addWaterTable(local_mapView,"Excavation Site");
 }
 
 //  #################################### Calculate the water elevation of each cell  ###################################

@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 import json
 import numpy as np
+import math
 
 from tethys_sdk.gizmos import *
 
@@ -137,15 +138,15 @@ def generate_water_table(request):
     get_data = request.GET
 
     pXCoords = json.loads(get_data['pXCoords'])
-    print pXCoords[0]
     pYCoords = json.loads(get_data['pYCoords'])
-    print pYCoords[0]
     wXCoords = json.loads(get_data['wXCoords'])
-    print wXCoords[0]
     wYCoords = json.loads(get_data['wYCoords'])
-    print wYCoords[0]
     cellSide = json.loads(get_data['cellSide'])
-    print cellSide
+    initial = float(json.loads(get_data['initial']))
+    bedrock = float(json.loads(get_data['bedrock']))
+    q = float(json.loads(get_data['q']))
+    k = float(json.loads(get_data['k']))
+
     waterTable = []
 
     # lat_list = numpy.arange(pXCoords[0], pXCoords[2], cellSide)
@@ -170,7 +171,7 @@ def generate_water_table(request):
                                    ]
                     },
                     'properties': {
-                        'elevation' : elevationCalc(long,lat,wXCoords,wYCoords,cellSide),
+                        'elevation' : elevationCalc(long,lat,wXCoords,wYCoords,cellSide, initial, bedrock, q, k),
                     }
             })
 
@@ -186,8 +187,44 @@ def generate_water_table(request):
     # return render(request, 'dewater/DewateringTool.html', context)
 
 # Assign elevations to raster grid
-def elevationCalc (long, lat, wXCoords,wYCoords,cellSide):
+def elevationCalc (long, lat, wXCoords,wYCoords,cellSide, initial, bedrock, q, k):
+    wellx = 0.0
+    welly = 0.0
+    wellr = 0.0
+    deltax = 0.0
+    deltay = 0.0
+    H = initial - bedrock
     wtElevation = 0.0
+
+    i = 0
+    sum = 0.0
+
+    while (i < len(wXCoords)):
+
+        wellx = wXCoords[i]
+        welly = wYCoords[i]
+        Q = q/len(wXCoords)
+
+        deltax = abs(long+cellSide/2-wellx)
+        deltay = abs(lat+cellSide/2-welly)
+
+        wellr = pow((pow(deltax,2) + pow(deltay,2)),0.5)
+
+        #Make sure that we don't create a complex value for the water table elevation
+        if (wellr < math.exp(math.log(500)-math.pi*k*pow(H,2)/Q)):
+            wellr = math.exp(math.log(500)-math.pi*k*pow(H,2)/Q)
+
+        if (math.log(500/wellr)<0):
+            sum = sum
+
+        else:
+            sum = sum + Q*math.log(500/wellr)
+
+            i = i+1
+
+
+
+    wtElevation = math.pow((math.pow(H,2) - sum/(math.pi*k)),0.5) + bedrock
 
 
     return (wtElevation)
