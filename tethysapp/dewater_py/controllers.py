@@ -8,16 +8,10 @@ import math
 from tethys_sdk.gizmos import *
 
 @login_required()
+
 def home(request):
     """
-    Controller for the app home page.
-    """
-    context = {}
-
-    return render(request, 'dewater_py/home.html', context)
-def tool(request):
-    """
-    Controller for the dewatering tool
+    Controller for the construction dewatering simulator
     """
     # Define view options
     view_options = MVView(
@@ -48,15 +42,6 @@ def tool(request):
             draw=drawing_options,
             legend=True
     )
-
-    # Define Message Box for user feedback
-    message_box = MessageBox(name='sampleModal',
-                         title='Message Box Title',
-                         message='Congratulations! This is a message box.',
-                         dismiss_button='Nevermind',
-                         affirmative_button='Proceed',
-                         width=400,
-                         affirmative_attributes='href=javascript:void(0);')
 
     # Define text input boxes for UI
     k = TextInput(display_text='Average Hydraulic Conductivity',
@@ -96,7 +81,7 @@ def tool(request):
                   )
 
     execute = Button(display_text='Calculate Water Table Elevations',
-                     attributes='onclick=app.verify();',
+                     attributes='onclick=app.dewater();',
                      submit=True,
                      classes='btn-success')
 
@@ -105,7 +90,6 @@ def tool(request):
                      submit=True)
 
     context = { 'page_id' : '1', 'map_view_options': map_view_options,
-                'message_box':message_box,
                 'k':k,
                 'bedrock':bedrock,
                 'iwte':iwte,
@@ -114,7 +98,7 @@ def tool(request):
                 'execute':execute,
                 'instructions':instructions}
 
-    return render(request, 'dewater_py/DewateringTool.html', context)
+    return render(request, 'dewater_py/home.html', context)
 
 
 def generate_water_table(request):
@@ -132,12 +116,9 @@ def generate_water_table(request):
 
     waterTable = []
 
-    # lat_list = numpy.arange(pXCoords[0], pXCoords[2], cellSide)
-    # lon_list = numpy.arange(pYCoords[0], pYCoords[2], cellSide)
+    # This section constructs the featurecollection polygons defining the water table elevations
+    # Cells are defined at the corners, water table elevation is defined at the center of the cell
 
-    # Create water table raster grid
-
-    # This code builds the grid with the bounding box being the perimeter drawn by the user
     for long in np.arange(xIndex[0]-cellSide, xIndex[1]+cellSide, cellSide):
         for lat in np.arange(yIndex[0]-cellSide, yIndex[1]+cellSide, cellSide):
             waterTable.append({
@@ -158,16 +139,11 @@ def generate_water_table(request):
                     }
             })
 
-    # test = json.dumps(waterTable)
-    # print test
-
     return JsonResponse({
         "sucess": "Data analysis complete!",
         "local_Water_Table": json.dumps(waterTable)
     })
-    # context = {}
-    #
-    # return render(request, 'dewater/DewateringTool.html', context)
+
 
 # Assign elevations to raster grid
 def elevationCalc (long, lat, wXCoords,wYCoords,cellSide, initial, bedrock, q, k):
@@ -200,27 +176,3 @@ def elevationCalc (long, lat, wXCoords,wYCoords,cellSide, initial, bedrock, q, k
 
     wtElevation = math.pow(abs(math.pow(H,2) - sum/(math.pi*k)),0.5) + bedrock
     return (wtElevation)
-
-def user(request):
-    """
-    Controller for the software license page.
-    """
-    context = {'page_id' : '2'}
-
-    return render(request, 'dewater_py/user.html', context)
-
-def tech(request):
-    """
-    Controller for the software license page.
-    """
-    context = {'page_id' : '3'}
-
-    return render(request, 'dewater_py/tech.html', context)
-
-def license(request):
-    """
-    Controller for the software license page.
-    """
-    context = {'page_id' : '4'}
-
-    return render(request, 'dewater_py/license.html', context)
