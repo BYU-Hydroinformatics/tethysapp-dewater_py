@@ -218,6 +218,9 @@ do {
 }
 while (i<10);
 
+pXCoords = [pXCoords[0], pXCoords[2]];
+pYCoords = [pYCoords[0], pYCoords[2]];
+
 //reinitialize counters
 i = 0;
 c = 0;
@@ -275,12 +278,44 @@ var waterTableRegional = [];
 var sum = 0.0;  //This is for summing q*ln(R/r)
 
 $.ajax({
+	type: 'GET',
+	url: 'generate-water-table',
+	dataType: 'json',
+	data: {
+		'xIndex': JSON.stringify(mapXCoords),
+		'yIndex': JSON.stringify(mapYCoords),
+		'wXCoords': JSON.stringify(wXCoords),
+		'wYCoords': JSON.stringify(wYCoords),
+		'cellSide': JSON.stringify(cellSide),
+		'initial': JSON.stringify(iwte.value),
+		'bedrock': JSON.stringify(bedrock.value),
+		'q': JSON.stringify(q.value),
+		'k': JSON.stringify(k.value),
+		},
+		success: function (data){
+				console.log(data)
+				waterTableRegional = (JSON.parse(data.local_Water_Table));
+				var raster_elev_mapView = {
+					'type': 'FeatureCollection',
+					'crs': {
+						'type': 'name',
+						'properties':{
+							'name':'EPSG:4326'
+							}
+					},
+					'features': waterTableRegional
+				};
+				addWaterTable(raster_elev_mapView,"Water Table");
+				}
+		});
+
+$.ajax({
     type: 'GET',
     url: 'generate-water-table',
     dataType: 'json',
     data: {
-        'pXCoords': JSON.stringify(pXCoords),
-        'pYCoords': JSON.stringify(pYCoords),
+        'xIndex': JSON.stringify(pXCoords),
+        'yIndex': JSON.stringify(pYCoords),
         'wXCoords': JSON.stringify(wXCoords),
         'wYCoords': JSON.stringify(wYCoords),
         'cellSide': JSON.stringify(cellSide),
@@ -334,28 +369,28 @@ $.ajax({
 //    }
 
 // This code builds the grid using the bounding box as the zoomed in view of the user
-for (long = mapXCoords[0]-cellSide; long < mapXCoords[1]; long += cellSide) {
-    for (lat = mapYCoords[0]-cellSide; lat < mapYCoords[1]; lat += cellSide){
-        waterTableRegional.push({
-            'type': 'Feature',
-            'geometry': {
-                'type': 'Polygon',
-                'coordinates':  [
-                                 [  [long,lat],
-                                    [long + cellSide, lat],
-                                    [long + cellSide, lat + cellSide],
-                                    [long, lat + cellSide],
-                                    [long,lat]
-                                 ]
-                                ]
-                },
-                'properties': {
-                    'elevation' : elevationCalc(long,lat,wXCoords,wYCoords,cellSide),
-                    'text': Math.round(Number(elevationCalc(long,lat,wXCoords,wYCoords,cellSide))),
-                }
-            });
-        }
-    }
+//for (long = mapXCoords[0]-cellSide; long < mapXCoords[1]; long += cellSide) {
+//    for (lat = mapYCoords[0]-cellSide; lat < mapYCoords[1]; lat += cellSide){
+//        waterTableRegional.push({
+//            'type': 'Feature',
+//            'geometry': {
+//                'type': 'Polygon',
+//                'coordinates':  [
+//                                 [  [long,lat],
+//                                    [long + cellSide, lat],
+//                                    [long + cellSide, lat + cellSide],
+//                                    [long, lat + cellSide],
+//                                    [long,lat]
+//                                 ]
+//                                ]
+//                },
+//                'properties': {
+//                    'elevation' : elevationCalc(long,lat,wXCoords,wYCoords,cellSide),
+//                    'text': Math.round(Number(elevationCalc(long,lat,wXCoords,wYCoords,cellSide))),
+//                }
+//            });
+//        }
+//    }
 
 //console.log(waterTable);
 //console.log(peripheryTable);
@@ -381,18 +416,18 @@ for (long = mapXCoords[0]-cellSide; long < mapXCoords[1]; long += cellSide) {
 //    'features': waterTable
 //};
 
-var raster_elev_mapView = {
-    'type': 'FeatureCollection',
-    'crs': {
-        'type': 'name',
-        'properties':{
-            'name':'EPSG:4326'
-            }
-    },
-    'features': waterTableRegional
-};
+//var raster_elev_mapView = {
+//    'type': 'FeatureCollection',
+//    'crs': {
+//        'type': 'name',
+//        'properties':{
+//            'name':'EPSG:4326'
+//            }
+//    },
+//    'features': waterTableRegional
+//};
 //addWaterTable(raster_elev,"Water Table Elevations");
-addWaterTable(raster_elev_mapView,"Water Table");
+//addWaterTable(raster_elev_mapView,"Water Table");
 //addWaterTable(local_mapView,"Excavation Site");
 }
 

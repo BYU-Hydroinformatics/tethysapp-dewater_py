@@ -116,29 +116,12 @@ def tool(request):
 
     return render(request, 'dewater_py/DewateringTool.html', context)
 
-def verify(request):
-
-        # Define Message Box for user feedback
-    message_box = MessageBox(name='sampleModal',
-                         title='Message Box Title',
-                         message='Congratulations! This is a message box.',
-                         dismiss_button='Nevermind',
-                         affirmative_button='Proceed',
-                         width=400,
-                         affirmative_attributes='href=javascript:void(0);')
-
-    context = {
-        'message_box':message_box
-                }
-
-    return render(request, 'dewater_py/DewateringTool.html', context)
 
 def generate_water_table(request):
-
     get_data = request.GET
 
-    pXCoords = json.loads(get_data['pXCoords'])
-    pYCoords = json.loads(get_data['pYCoords'])
+    xIndex = json.loads(get_data['xIndex'])
+    yIndex = json.loads(get_data['yIndex'])
     wXCoords = json.loads(get_data['wXCoords'])
     wYCoords = json.loads(get_data['wYCoords'])
     cellSide = json.loads(get_data['cellSide'])
@@ -155,8 +138,8 @@ def generate_water_table(request):
     # Create water table raster grid
 
     # This code builds the grid with the bounding box being the perimeter drawn by the user
-    for long in np.arange(pXCoords[0]-cellSide, pXCoords[2]+cellSide, cellSide):
-        for lat in np.arange(pYCoords[0]-cellSide, pYCoords[2]+cellSide, cellSide):
+    for long in np.arange(xIndex[0]-cellSide, xIndex[1]+cellSide, cellSide):
+        for lat in np.arange(yIndex[0]-cellSide, yIndex[1]+cellSide, cellSide):
             waterTable.append({
                 'type': 'Feature',
                 'geometry': {
@@ -171,12 +154,12 @@ def generate_water_table(request):
                                    ]
                     },
                     'properties': {
-                        'elevation' : elevationCalc(long,lat,wXCoords,wYCoords,cellSide, initial, bedrock, q, k),
+                        'elevation' : elevationCalc(long,lat,wXCoords,wYCoords,cellSide,initial,bedrock,q,k),
                     }
             })
 
-    test = json.dumps(waterTable)
-    print test
+    # test = json.dumps(waterTable)
+    # print test
 
     return JsonResponse({
         "sucess": "Data analysis complete!",
@@ -188,13 +171,7 @@ def generate_water_table(request):
 
 # Assign elevations to raster grid
 def elevationCalc (long, lat, wXCoords,wYCoords,cellSide, initial, bedrock, q, k):
-    wellx = 0.0
-    welly = 0.0
-    wellr = 0.0
-    deltax = 0.0
-    deltay = 0.0
     H = initial - bedrock
-    wtElevation = 0.0
 
     i = 0
     sum = 0.0
@@ -214,22 +191,15 @@ def elevationCalc (long, lat, wXCoords,wYCoords,cellSide, initial, bedrock, q, k
         if (wellr < math.exp(math.log(500)-math.pi*k*pow(H,2)/Q)):
             wellr = math.exp(math.log(500)-math.pi*k*pow(H,2)/Q)
 
-        if (math.log(500/wellr)<0):
+        elif (math.log(500/wellr)<0):
             sum = sum
 
         else:
             sum = sum + Q*math.log(500/wellr)
-
-            i = i+1
-
-
+        i = i+1
 
     wtElevation = math.pow(abs(math.pow(H,2) - sum/(math.pi*k)),0.5) + bedrock
-
-
     return (wtElevation)
-
-
 
 def user(request):
     """

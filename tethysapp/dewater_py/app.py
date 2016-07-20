@@ -1,4 +1,5 @@
 from tethys_sdk.base import TethysAppBase, url_map_maker
+# from tethys_sdk.stores import PersistentStore
 
 
 class DewaterPy(TethysAppBase):
@@ -35,12 +36,20 @@ class DewaterPy(TethysAppBase):
                     UrlMap(name='tech',
                            url='dewater_py/tech',
                            controller='dewater_py.controllers.tech'),
-                    UrlMap(name='verify',
-                           url='dewater_py/verify',
-                           controller='dewater_py.controllers.verify'),
                     UrlMap(name='get_generate_water_table_ajax',
                            url='dewater-py/tool/generate-water-table',
                            controller='dewater_py.controllers.generate_water_table'),
         )
 
         return url_maps
+    # def persistent_stores(self):
+    #     """
+    #     Add one or more persistent stores
+    #     """
+    #     stores = (PersistentStore(name='test',
+    #                               initializer='init_stores:init_stream_gage_db',
+    #                               spatial=True
+    #                               ),
+    #               )
+    #
+    #     return stores
