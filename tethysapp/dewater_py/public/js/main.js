@@ -1,19 +1,17 @@
-
 //  ################################# Global declarations ##################################################
 "use strict";
 
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
-
-$(".legend-content").bind("DOMNodeInserted", 'li', function(){
-	var map = TETHYS_MAP_VIEW.getMap();
-    if (map.getLayers().item(2)){
-    	toggle_legend(map.getLayers().item(2).getProperties().visible,1);
-	};
-	if (map.getLayers().item(3)){
-		toggle_legend(map.getLayers().item(3).getProperties().visible,2);
-	}
+//$("#map_view").on("click","a",function(){
+$(document).on('DOMNodeInserted', function() {
+	$(function() {
+		var map = TETHYS_MAP_VIEW.getMap();
+		if (!!map.getLayers().item(2)){
+			toggle_legend(map.getLayers().item(2).getProperties().visible,1);
+		};
+		if (!!map.getLayers().item(3)){
+			toggle_legend(map.getLayers().item(3).getProperties().visible,2);
+		}
+	})
 })
 
 function welcome_modal() {
@@ -339,8 +337,6 @@ function addWaterTable(raster_elev,titleName){
             map.removeLayer(map.getLayers().item(i));
     }
     vector.tethys_legend_title = 'Water Table';
-    //vector.tethys_feature_selection = 'false';
-    //vector.set('feature_selection', false);
     map.addLayer(vector);
 
     TETHYS_MAP_VIEW.updateLegend();
