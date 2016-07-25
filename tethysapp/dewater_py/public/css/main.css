@@ -13,6 +13,22 @@ div.foo {
   margin: 5px;
 }
 
+div.legend2 {
+    /* To correctly align image, regardless of content height: */
+    vertical-align: top;
+    display: inline-block;
+    /* To horizontally center images and caption */
+    text-align: center;
+    /* The width of the container also implies margin around the images. */
+    width: 80px;
+}
+
+div.foo2 {
+  width: 70px;
+  height: 20px;
+  margin: 5px;
+}
+
 .blue {
   background: #0020E5;
 }

@@ -1,19 +1,6 @@
 //  ################################# Global declarations ##################################################
 "use strict";
 
-//$("#map_view").on("click","a",function(){
-$(document).on('DOMNodeInserted', function() {
-	$(function() {
-		var map = TETHYS_MAP_VIEW.getMap();
-		if (!!map.getLayers().item(2)){
-			toggle_legend(map.getLayers().item(2).getProperties().visible,1);
-		};
-		if (!!map.getLayers().item(3)){
-			toggle_legend(map.getLayers().item(3).getProperties().visible,2);
-		}
-	})
-})
-
 function welcome_modal() {
     var myHTMLBody =
         "<p>This tool is used to aid in the design of a simple construction dewatering system in" +
@@ -243,6 +230,7 @@ function dewater(){
 						'features': waterTableRegional
 					};
 					addWaterTable(raster_elev_mapView,"Water Table");
+					addDewateredLayer(raster_elev_mapView,"Dewatered Region(s)");
 					}
 			});
 };
@@ -272,7 +260,7 @@ function addWaterTable(raster_elev,titleName){
         else if (value > Number(bedrock.value))
             return [191,0,23, 0.7];           //Red, Hex:BF0017
 		else
-			return defaultStyle;
+			return [0,0,0,0.7];
     };
 
     var defaultStyle = new ol.style.Style({
@@ -336,17 +324,116 @@ function addWaterTable(raster_elev,titleName){
         if (map.getLayers().item(i).getProperties().tethys_legend_title === titleName)
             map.removeLayer(map.getLayers().item(i));
     }
-    vector.tethys_legend_title = 'Water Table';
+    vector.tethys_legend_title = titleName;
     map.addLayer(vector);
 
     TETHYS_MAP_VIEW.updateLegend();
 
-    map.getLayers().item(1).setZIndex(2)
+    map.getLayers().item(1).setZIndex(2);
+
+    toggle_legend(map.getLayers().item(2).getProperties().visible,1);
+
+}
+
+//  #################################### Add a layer symbolizing dewatered/not-dewatered ###############################
+
+function addDewateredLayer(raster_elev,titleName){
+
+    var getStyleColor;
+    var map;
+    var i;
+
+    getStyleColor = function(value) {
+        if (value <= Number(dwte.value))
+            return [0,255,0,0.7];         //Green
+		else if (value > Number(dwte.value))
+            return [191,0,23, 0.7];       //Red, Hex:BF0017
+    };
+
+    var defaultStyle = new ol.style.Style({
+        fill: new ol.style.Fill({
+            color: [0,0,0,0.7]
+        }),
+        stroke: new ol.style.Stroke({
+        color: [220,220,220,0.7],
+        width: 1
+        })
+    });
+    //This will be used to cache the style
+    var styleCache = {};
+
+    //the style function returns an array of styles for the given feature and resolution
+    //Return null to hide the feature
+    function styleFunction(feature, resolution){
+        //get the elevation from the feature properties
+        var elevation = feature.get('elevation');
+        //if there is no elevation value or it's one we don't recognize,
+        //return the default style
+        if(!elevation) {
+            return [defaultStyle];
+            }
+        //check the cache and create a new style for the elevation if it's not been created before.
+        if(!styleCache[elevation]){
+            var style_color = getStyleColor(elevation);
+            styleCache[elevation] = new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: style_color
+                    }),
+                stroke: defaultStyle.stroke
+                });
+            }
+    //at this point, the style for the current level is in the cache so return it as an array
+        return [styleCache[elevation]];
+    }
+
+    var collection = raster_elev;
+    var format = new ol.format.GeoJSON();
+    //map.getLayers().item(2).getSource().addFeatures(format.readFeatures(collection, {featureProjection:"EPSG:4326"}))
+    var vectorSource = new ol.source.Vector({
+        features: format.readFeatures(collection,
+        {featureProjection:"EPSG:4326"})
+        });
+
+    var display = true;
+
+    var vector = new ol.layer.Image({
+            tethys_legend_title: titleName,
+            zIndex: 1,
+            source: new ol.source.ImageVector({
+                source: vectorSource,
+                style: styleFunction,
+            }),
+        });
+
+    // Make sure that the layer is not already existing, remove it if the layer does exist
+    map = TETHYS_MAP_VIEW.getMap();
+    for (i = 0; i < map.getLayers().getProperties().length ; i ++){
+        if (map.getLayers().item(i).getProperties().tethys_legend_title === titleName)
+            map.removeLayer(map.getLayers().item(i));
+    }
+    vector.tethys_legend_title = titleName;
+    vector.setVisible(false);
+    map.addLayer(vector);
+
+    TETHYS_MAP_VIEW.updateLegend();
+
+    $('a.display-control').on("click", function(){
+        $(function() {
+            var map = TETHYS_MAP_VIEW.getMap();
+            if (!!map.getLayers().item(2)){
+                toggle_legend(map.getLayers().item(2).getProperties().visible,1);
+            };
+            if (!!map.getLayers().item(3)){
+                toggle_legend(map.getLayers().item(3).getProperties().visible,2);
+            }
+        })
+    });
+
 }
 
 //  #################################### Toggle Color Legend On/Off ####################################################
 function toggle_legend(boolean,layer){
-    var ele = "";
+//    var ele = "";
     var i;
 
     i = 1;
@@ -367,14 +454,24 @@ function toggle_legend(boolean,layer){
 		i = i+1;
 		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)-Number(dwte.value*0.375))) + "-" + Number(1);
 		i = i+1;
-	}
 
-	var ele = document.getElementById("colorLegend");
+        var ele = document.getElementById("colorLegend");
 
-	if (boolean == true)
-		ele.style.display = "block";
-	else
-		ele.style.display = "none";
+        if (boolean == true)
+            ele.style.display = "block";
+        else
+            ele.style.display = "none";
+    }
+    else if (layer == 2){
+
+        var ele = document.getElementById("dewatered");
+
+        if (boolean == true)
+            ele.style.display = "block";
+        else
+            ele.style.display = "none";
+
+    }
 };
 
 //  #################################### Remove Features via button ####################################################
