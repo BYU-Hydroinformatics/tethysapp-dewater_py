@@ -33,3 +33,8 @@ function modal_dialog(title, htmlBody, showFooter) {
     })
     $('#GenericModal').modal('show')
 }
+
+var mod;
+
+mod = {error_message: error_message,
+        modal_dialog: modal_dialog}

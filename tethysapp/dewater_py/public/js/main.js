@@ -480,9 +480,3 @@ function toggle_legend(boolean,layer){
 //Create public functions to be called in the controller
 var app;
 app = {dewater: dewater}
-
-
-
-
-
-
