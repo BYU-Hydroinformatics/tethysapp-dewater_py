@@ -26,12 +26,6 @@ function modal_dialog(title, htmlBody, showFooter) {
     $('#GenericModal').on('show.bs.modal', function (event) {
         $('#ModalTitle').text(title);
         $('#ModalBody').html(htmlBody);
-        // Insert equation into modal
-	   	var div = document.getElementById('Equation');
-		var img = new Image();
-		img.src = "/static/dewater_py/images/EQN.png";
-		div.appendChild(img);
-
         if (showFooter)
         	$('#ModalFooter').show();
         else

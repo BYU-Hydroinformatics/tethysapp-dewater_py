@@ -19,7 +19,7 @@ function welcome_modal() {
                 "<h6>4. Perform calculations</h6>" +
                 "<p>Click on the 'Calculate Water Table Elevations' tool to perform the drawdown calculations and " +
                 "display the results on the map.</p>"+
-				'<div align="center" id="Equation">' +
+				"<div align='center' id='Equation'><img src='/static/dewater_py/images/EQN.png'/></div>" +
 				'</div>';
     modal_dialog("Instructions", myHTMLBody, true);
 }

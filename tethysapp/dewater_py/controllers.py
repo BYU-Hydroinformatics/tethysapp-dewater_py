@@ -24,7 +24,7 @@ def home(request):
 
     # Define drawing options
     drawing_options = MVDraw(
-        controls=['Delete', 'Move', 'Point', 'Box'],
+        controls=['Delete', 'Move', 'Point', 'Box', 'Polygon'],
         initial='Box',
         output_format='WKT'
     )
