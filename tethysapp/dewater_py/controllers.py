@@ -80,14 +80,10 @@ def home(request):
                   append='[ft]',
                   )
 
-    execute = Button(display_text='Calculate Water Table Elevations',
-                     attributes='onclick=app.dewater();',
-                     submit=True,
-                     classes='btn-success')
-
-    instructions = Button(display_text='Instructions',
-                     attributes='onclick=generate_water_table',
-                     submit=True)
+    # execute = Button(display_text='Calculate Water Table Elevations',
+    #                  attributes='onclick=app.dewater();',
+    #                  submit=True,
+    #                  classes='btn-success')
 
     context = { 'page_id' : '1', 'map_view_options': map_view_options,
                 'k':k,
@@ -95,11 +91,115 @@ def home(request):
                 'iwte':iwte,
                 'q':q,
                 'dwte':dwte,
-                'execute':execute,
-                'instructions':instructions}
+                'execute':execute}
 
     return render(request, 'dewater_py/home.html', context)
 
+def verifyPy (request):
+    # getData = request.GET
+
+    print "Started!"
+
+    # k = json.loads(getData['k'])
+    # bedrock = json.loads(getData['bedrock'])
+    # initialEl = json.loads(getData['initialEl'])
+    # q = json.loads(getData['q'])
+    # endEl = json.loads(getData['endEl'])
+    # numFeatures = int(json.loads(getData['numFeatures']))
+    # numWells = int(json.loads(getData['numWells']))
+    # numPolys = int(json.loads(getData['numPolys']))
+
+    try:
+        k = float(k)
+    except ValueError:
+        error = 'Hydraulic Conductivity must be a numeric value'
+        return JsonResponse({
+        "error": json.dumps(error)
+        })
+
+    try:
+        bedrock = float(bedrock)
+    except ValueError:
+        error = 'Bedrock Elevation must be a numeric value'
+        return JsonResponse({
+        "error": json.dumps(error)
+        })
+
+    try:
+        initialEl= float(initialEl)
+    except ValueError:
+        error = 'Initial Water Table Elevation must be a numeric value'
+        return JsonResponse({
+        "error": json.dumps(error)
+        })
+
+    try:
+        q = float(q)
+    except ValueError:
+        error = 'Total Combined Flow must be a numeric value'
+        return JsonResponse({
+        "error": json.dumps(error)
+        })
+
+    try:
+        endEl = float(endEl)
+    except ValueError:
+        error = 'Desired Water Table Elevation must be a numeric value'
+        return JsonResponse({
+        "error": json.dumps(error)
+        })
+
+    if (endEl < bedrock):
+        error = 'Your desired elevation is lower than the bedrock elevation'
+        return JsonResponse({
+        "error": json.dumps(error)
+        })
+
+    if (initialEl < bedrock):
+        error = 'Your initial elevation is lower than the bedrock elevation'
+        return JsonResponse({
+        "error": json.dumps(error)
+        })
+
+    if (endEl > initialEl):
+        error = 'Your desired elevation is higher than the initial elevation'
+        return JsonResponse({
+        "error": json.dumps(error)
+        })
+
+    if (k <= 0):
+        error = 'Hydraulic conductivity must have a positive value, adjust your input'
+        return JsonResponse({
+        "error": json.dumps(error)
+        })
+
+    if (numFeatures == 0):
+        error = "You don't have any features, please provide a boundary and well locations"
+        return JsonResponse({
+        "error": json.dumps(error)
+        })
+
+    if (numWells == 0):
+        error = 'You need wells to perform the analysis, please add at least one well'
+        return JsonResponse({
+        "error": json.dumps(error)
+        })
+
+    elif (numPolys == 0):
+        error = 'You need a boundary for your analysis, please add a boundary'
+        return JsonResponse({
+        "error": json.dumps(error)
+        })
+
+    elif (numPolys > 1):
+        error = 'You have more than one Perimeter, delete the extra(s)'
+        return JsonResponse({
+        "error": json.dumps(error)
+        })
+    else:
+        return JsonResponse({
+        "success": "True"
+        })
 
 def generate_water_table(request):
     get_data = request.GET
@@ -176,7 +276,6 @@ def elevationCalc (long, lat, wXCoords,wYCoords,cellSide, initial, bedrock, q, k
         i = i+1
 
     wtElevation = math.pow(abs(math.pow(H,2) - sum/(math.pi*k)),0.5) + bedrock
-    print wtElevation
     return (round(wtElevation, 2))
 
 
