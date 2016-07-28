@@ -18,8 +18,9 @@ function welcome_modal() {
                 "your wells.</p>" +
                 "<h6>4. Perform calculations</h6>" +
                 "<p>Click on the 'Calculate Water Table Elevations' tool to perform the drawdown calculations and " +
-                "display the results on the map.</p>" +
-            "<h9>Note: INSERT A REFERENCE TO EQUATIONS USED.</h9>";
+                "display the results on the map.</p>"+
+				'<div align="center" id="Equation">' +
+				'</div>';
     modal_dialog("Instructions", myHTMLBody, true);
 }
 
@@ -32,40 +33,65 @@ $(document).ready(function(){
 function verify(numFeatures, numWells, numPolys){
     //initialize the variables for the functions to be used
 
-    if (dwte.value < bedrock.value){
+    if (isNaN(k.value)){
+    	error_message('Hydraulic Conductivity must be a numeric value');
+    	return false;
+	}
+
+	if (isNaN(bedrock.value)){
+    	error_message('Bedrock Elevation must be a numeric value');
+    	return false;
+	}
+
+	if (isNaN(iwte.value)){
+    	error_message('Initial Water Table Elevation must be a numeric value');
+    	return false;
+	}
+
+	if (isNaN(q.value)){
+    	error_message('Total Combined Flow must be a numeric value');
+    	return false;
+	}
+
+	if (isNaN(dwte.value)){
+    	error_message('Desired Water Table Elevation must be a numeric value');
+    	return false;
+	}
+
+    if (Number(dwte.value) < Number(bedrock.value)){
          error_message('Your desired elevation is lower than the bedrock elevation');
          return false;
-     }
+    }
 
-    if (iwte.value < bedrock.value){
+    if (Number(iwte.value) < Number(bedrock.value)){
         error_message('Your initial elevation is lower than the bedrock elevation');
         return false;
     }
 
-    if (dwte.value > dwte.value){
+    if (Number(dwte.value) > Number(iwte.value)){
         error_message('Your desired elevation is higher than the initial elevation');
         return false;
     }
 
-    if (k.value <= 0){
+    if (Number(k.value) <= 0){
         error_message('Hydraulic conductivity must have a positive value, adjust your input');
         return false;
     }
 
-    if (numFeatures  == 0) {
-        error_message("You dont have any features, please provide a boundary and well locations");
+    if (Number(numFeatures)  == 0) {
+        error_message("You don't have any features, please provide a boundary and well locations");
         return false;
     }
 
-    if (numWells == 0) {
+    if (Number(numWells) == 0) {
         error_message('You need wells to perform the analysis, please add at least one well');
         return false;
     }
-    else if (numPolys == 0) {
+    else if (Number(numPolys) == 0) {
         error_message('You need a boundary for your analysis, please add a boundary');
         return false;
     }
-    else if (numPolys > 1) {
+    else if (Number(numPolys) > 1) {
         error_message('You have more than one Perimeter, delete the extra(s)');
         return false;
     }
@@ -104,6 +130,8 @@ function dewater(){
    //This method returns the OpenLayers map object.
     map = TETHYS_MAP_VIEW.getMap();
 
+	toggle_legend(false,1);
+	toggle_legend(false,2);
 
  //this reads the number of features found in the map object and verifies that all of the required features are present
     mapFeatures = map.getLayers().item(1).getSource().getFeatures();
@@ -329,9 +357,9 @@ function addWaterTable(raster_elev,titleName){
 
     TETHYS_MAP_VIEW.updateLegend();
 
-    map.getLayers().item(1).setZIndex(2);
+    map.getLayers().item(1).setZIndex(3);
 
-    toggle_legend(map.getLayers().item(2).getProperties().visible,1);
+    toggle_legend(true,1);
 
 }
 
@@ -348,6 +376,8 @@ function addDewateredLayer(raster_elev,titleName){
             return [0,255,0,0.7];         //Green
 		else if (value > Number(dwte.value))
             return [191,0,23, 0.7];       //Red, Hex:BF0017
+		else
+			return defaultStyle;
     };
 
     var defaultStyle = new ol.style.Style({
@@ -452,7 +482,9 @@ function toggle_legend(boolean,layer){
 		i = i+1;
 		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)-Number(dwte.value*0.25))) + "-" + Math.round(Number(Number(dwte.value)-Number(dwte.value*0.375)));
 		i = i+1;
-		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)-Number(dwte.value*0.375))) + "-" + Number(1);
+		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)-Number(dwte.value*0.375))) + "-" + Number(Number(1)+Number(bedrock.value));
+		i = i+1;
+		document.getElementById(String(i)).innerHTML = Number(bedrock.value);
 		i = i+1;
 
         var ele = document.getElementById("colorLegend");
@@ -480,3 +512,9 @@ function toggle_legend(boolean,layer){
 //Create public functions to be called in the controller
 var app;
 app = {dewater: dewater}
+
+
+
+
+
+

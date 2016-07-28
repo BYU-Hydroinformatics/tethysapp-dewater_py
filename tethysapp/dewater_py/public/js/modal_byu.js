@@ -25,7 +25,13 @@ function error_message(errMessageText) {
 function modal_dialog(title, htmlBody, showFooter) {
     $('#GenericModal').on('show.bs.modal', function (event) {
         $('#ModalTitle').text(title);
-        $('#ModalBody').html(htmlBody);   
+        $('#ModalBody').html(htmlBody);
+        // Insert equation into modal
+	   	var div = document.getElementById('Equation');
+		var img = new Image();
+		img.src = "/static/dewater_py/images/EQN.png";
+		div.appendChild(img);
+
         if (showFooter)
         	$('#ModalFooter').show();
         else
@@ -33,8 +39,3 @@ function modal_dialog(title, htmlBody, showFooter) {
     })
     $('#GenericModal').modal('show')
 }
-
-var mod;
-
-mod = {error_message: error_message,
-        modal_dialog: modal_dialog}

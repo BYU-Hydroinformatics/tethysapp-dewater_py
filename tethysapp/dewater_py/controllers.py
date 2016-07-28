@@ -166,6 +166,7 @@ def elevationCalc (long, lat, wXCoords,wYCoords,cellSide, initial, bedrock, q, k
         #Make sure that we don't create a complex value for the water table elevation
         if (wellr < math.exp(math.log(500)-math.pi*k*pow(H,2)/Q)):
             wellr = math.exp(math.log(500)-math.pi*k*pow(H,2)/Q)
+            sum = sum + Q*math.log(500/wellr)
 
         elif (math.log(500/wellr)<0):
             sum = sum
@@ -175,7 +176,8 @@ def elevationCalc (long, lat, wXCoords,wYCoords,cellSide, initial, bedrock, q, k
         i = i+1
 
     wtElevation = math.pow(abs(math.pow(H,2) - sum/(math.pi*k)),0.5) + bedrock
-    return (wtElevation)
+    print wtElevation
+    return (round(wtElevation, 2))
 
 
 
