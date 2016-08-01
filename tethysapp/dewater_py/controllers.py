@@ -80,10 +80,10 @@ def home(request):
                   append='[ft]',
                   )
 
-    # execute = Button(display_text='Calculate Water Table Elevations',
-    #                  attributes='onclick=app.dewater();',
-    #                  submit=True,
-    #                  classes='btn-success')
+    execute = Button(display_text='Calculate Water Table Elevations',
+                     attributes='onclick=app.dewater();',
+                     submit=True,
+                     classes='btn-success')
 
     context = { 'page_id' : '1', 'map_view_options': map_view_options,
                 'k':k,
@@ -96,18 +96,18 @@ def home(request):
     return render(request, 'dewater_py/home.html', context)
 
 def verifyPy (request):
-    # getData = request.GET
+    getData = request.GET
 
     print "Started!"
 
-    # k = json.loads(getData['k'])
-    # bedrock = json.loads(getData['bedrock'])
-    # initialEl = json.loads(getData['initialEl'])
-    # q = json.loads(getData['q'])
-    # endEl = json.loads(getData['endEl'])
-    # numFeatures = int(json.loads(getData['numFeatures']))
-    # numWells = int(json.loads(getData['numWells']))
-    # numPolys = int(json.loads(getData['numPolys']))
+    k = json.loads(getData['k'])
+    bedrock = json.loads(getData['bedrock'])
+    initialEl = json.loads(getData['initialEl'])
+    q = json.loads(getData['q'])
+    endEl = json.loads(getData['endEl'])
+    numFeatures = int(json.loads(getData['numFeatures']))
+    numWells = int(json.loads(getData['numWells']))
+    numPolys = int(json.loads(getData['numPolys']))
 
     try:
         k = float(k)

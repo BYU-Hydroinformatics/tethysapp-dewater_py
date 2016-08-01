@@ -33,71 +33,31 @@ $(document).ready(function(){
 function verify(numFeatures, numWells, numPolys){
     //initialize the variables for the functions to be used
 
-    if (isNaN(k.value)){
-    	error_message('Hydraulic Conductivity must be a numeric value');
-    	return false;
-	}
-
-	if (isNaN(bedrock.value)){
-    	error_message('Bedrock Elevation must be a numeric value');
-    	return false;
-	}
-
-	if (isNaN(iwte.value)){
-    	error_message('Initial Water Table Elevation must be a numeric value');
-    	return false;
-	}
-
-	if (isNaN(q.value)){
-    	error_message('Total Combined Flow must be a numeric value');
-    	return false;
-	}
-
-	if (isNaN(dwte.value)){
-    	error_message('Desired Water Table Elevation must be a numeric value');
-    	return false;
-	}
-
-    if (Number(dwte.value) < Number(bedrock.value)){
-         error_message('Your desired elevation is lower than the bedrock elevation');
-         return false;
-    }
-
-    if (Number(iwte.value) < Number(bedrock.value)){
-        error_message('Your initial elevation is lower than the bedrock elevation');
-        return false;
-    }
-
-    if (Number(dwte.value) > Number(iwte.value)){
-        error_message('Your desired elevation is higher than the initial elevation');
-        return false;
-    }
-
-    if (Number(k.value) <= 0){
-        error_message('Hydraulic conductivity must have a positive value, adjust your input');
-        return false;
-    }
-
-    if (Number(numFeatures)  == 0) {
-        error_message("You don't have any features, please provide a boundary and well locations");
-        return false;
-    }
-
-    if (Number(numWells) == 0) {
-        error_message('You need wells to perform the analysis, please add at least one well');
-        return false;
-    }
-    else if (Number(numPolys) == 0) {
-        error_message('You need a boundary for your analysis, please add a boundary');
-        return false;
-    }
-    else if (Number(numPolys) > 1) {
-        error_message('You have more than one Perimeter, delete the extra(s)');
-        return false;
-    }
-
-    //If you are to here without a return, everyting must be OK
-    return true;
+	$.ajax({
+		type: 'GET',
+		url: 'verifyPy',
+		dataType: 'json',
+		data: {
+			'k': JSON.stringify(k.value),
+			'bedrock': JSON.stringify(bedrock.value),
+			'initialEl': JSON.stringify(iwte.value),
+			'q': JSON.stringify(q.value),
+			'endEl': JSON.stringify(dwte.value),
+			'numFeatures': JSON.stringify(numFeatures),
+			'numWells': JSON.stringify(numWells),
+			'numPolys': JSON.stringify(numPolys),
+			},
+			success: function (data){
+//					console.log(data)
+					if ('success' in data){
+					}
+					if ('error' in data){
+						var error = (JSON.parse(data.error));
+						error_message(error);
+						return false;
+					}
+				}
+			});
  };
 
 function isOdd(num) {return !!(num % 2);}
