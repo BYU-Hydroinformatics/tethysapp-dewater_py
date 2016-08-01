@@ -25,7 +25,7 @@ function error_message(errMessageText) {
 function modal_dialog(title, htmlBody, showFooter) {
     $('#GenericModal').on('show.bs.modal', function (event) {
         $('#ModalTitle').text(title);
-        $('#ModalBody').html(htmlBody);   
+        $('#ModalBody').html(htmlBody);
         if (showFooter)
         	$('#ModalFooter').show();
         else
