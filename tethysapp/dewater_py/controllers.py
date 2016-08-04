@@ -176,7 +176,7 @@ def elevationCalc (long, lat, wXCoords,wYCoords,cellSide, initial, bedrock, q, k
         i = i+1
 
     wtElevation = math.pow(abs(math.pow(H,2) - sum/(math.pi*k)),0.5) + bedrock
-    print wtElevation
+    # print wtElevation # for debugging purposes
     return (round(wtElevation, 2))
 
 
