@@ -271,19 +271,19 @@ function addWaterTable(raster_elev,titleName){
     var i;
 
     getStyleColor = function(value) {
-        if (value > Number(dwte.value)+Number(dwte.value*0.375))
+        if (value > Number(dwte.value)+(Number(dwte.value)-Number(bedrock.value))*0.375)
             return [0,32,229,0.7];       //Blue, Hex:0020E5
-        else if (value > Number(dwte.value)+Number(dwte.value*0.25))
+        else if (value > Number(dwte.value)+(Number(dwte.value)-Number(bedrock.value))*0.25)
             return [1,107,231,0.7];       //Light Blue, Hex:016BE7
-        else if (value > Number(dwte.value)+Number(dwte.value*0.125))
+        else if (value > Number(dwte.value)+(Number(dwte.value)-Number(bedrock.value))*0.125)
             return [0,158,223,0.7];     //Lighter Blue, Hex:009EDF
         else if (value > dwte.value)
             return [0,218,157,0.7];       //Turqoise(ish), Hex:00DA9D
-        else if (value > Number(dwte.value)-Number(dwte.value*0.125))
+        else if (value > Number(dwte.value)-(Number(dwte.value)-Number(bedrock.value))*0.125)
             return [0,255,0,0.7];         //Green
-        else if (value > Number(dwte.value)-Number(dwte.value*0.25))
+        else if (value > Number(dwte.value)-(Number(dwte.value)-Number(bedrock.value))*0.25)
             return [255,255,0,0.7];       //Yellow, Hex:FFFF00
-        else if (value > Number(dwte.value)-Number(dwte.value*0.375))
+        else if (value > Number(dwte.value)-(Number(dwte.value)-Number(bedrock.value))*0.375)
             return [196,87,0,0.7];       //Orange, Hex:C45700
         else if (value > Number(bedrock.value))
             return [191,0,23, 0.7];           //Red, Hex:BF0017
@@ -468,21 +468,21 @@ function toggle_legend(boolean,layer){
 
     i = 1;
 	if (layer == 1){
-		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)+Number(1)+Number(dwte.value*0.375)));
+		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)+Number(1)+((Number(dwte.value)-Number(bedrock.value))*0.375)));
 		i = i+1;
-		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)+Number(dwte.value*0.375))) + "-" + Math.round(Number(Number(dwte.value)+Number(dwte.value*0.25)));
+		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)+((Number(dwte.value)-Number(bedrock.value))*0.375))) + "-" + Math.round(Number(Number(dwte.value)+((Number(dwte.value)-Number(bedrock.value))*0.25)));
 		i = i+1;
-		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)+Number(dwte.value*0.25))) + "-" + Math.round(Number(Number(dwte.value)+Number(dwte.value*0.125)));
+		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)+((Number(dwte.value)-Number(bedrock.value))*0.25))) + "-" + Math.round(Number(Number(dwte.value)+((Number(dwte.value)-Number(bedrock.value))*0.125)));
 		i = i+1;
-		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)+Number(dwte.value*0.125))) + "-" + Math.round(Number(dwte.value));
+		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)+((Number(dwte.value)-Number(bedrock.value))*0.125))) + "-" + Math.round(Number(dwte.value));
 		i = i+1;
-		document.getElementById(String(i)).innerHTML = Math.round(dwte.value) + "-" + Math.round(Number(Number(dwte.value)-Number(dwte.value*0.125)));
+		document.getElementById(String(i)).innerHTML = Math.round(dwte.value) + "-" + Math.round(Number(Number(dwte.value)-((Number(dwte.value)-Number(bedrock.value))*0.125)));
 		i = i+1;
-		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)-Number(dwte.value*0.125))) + "-" + Math.round(Number(Number(dwte.value)-Number(dwte.value*0.25)));
+		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)-((Number(dwte.value)-Number(bedrock.value))*0.125))) + "-" + Math.round(Number(Number(dwte.value)-((Number(dwte.value)-Number(bedrock.value))*0.25)));
 		i = i+1;
-		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)-Number(dwte.value*0.25))) + "-" + Math.round(Number(Number(dwte.value)-Number(dwte.value*0.375)));
+		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)-((Number(dwte.value)-Number(bedrock.value))*0.25))) + "-" + Math.round(Number(Number(dwte.value)-((Number(dwte.value)-Number(bedrock.value))*0.375)));
 		i = i+1;
-		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)-Number(dwte.value*0.375))) + "-" + Number(Number(1)+Number(bedrock.value));
+		document.getElementById(String(i)).innerHTML = Math.round(Number(Number(dwte.value)-((Number(dwte.value)-Number(bedrock.value))*0.375))) + "-" + Number(Number(1)+Number(bedrock.value));
 		i = i+1;
 		document.getElementById(String(i)).innerHTML = Number(bedrock.value);
 		i = i+1;
